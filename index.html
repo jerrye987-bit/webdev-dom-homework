@@ -65,7 +65,53 @@
 
   <script>
     "use strict";
-    // Код писать здесь
-    console.log("It works!");
+    const nameEl = document.querySelector('.add-form-name');
+    const textEl = document.querySelector('.add-form-text');
+    const btnEl = document.querySelector('.add-form-button');
+    const commentsEl = document.querySelector('.comments');
+// Добавляем комментарий
+    btnEl.addEventListener('click', () => {
+      if (nameEl.value === "" || textEl.value === "") {
+        return;
+    }
+
+      const newComment = 
+      `<div class="comment">
+          <div class="comment-header">
+            <div>${nameEl.value}</div>
+            <div>${new Date().toLocaleString()}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">${textEl.value}</div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">0</span>
+              <button class="like-button"></button>
+            </div>
+          </div>
+        </div>`;
+
+        commentsEl.innerHTML += newComment;
+        nameEl.value = ""; 
+        textEl.value = "";
+    })
+// Добавляем/убираем лайк
+    commentsEl.addEventListener('click', () => {
+      if (event.target.classList.contains('like-button')) {
+        const likeButton = event.target;
+        const counterEl = likeButton.closest('.likes').querySelector('.likes-counter');
+        let currentCount = Number(counterEl.innerHTML);
+        
+        if (likeButton.classList.contains('-active-like')) {
+          currentCount--;
+          likeButton.classList.remove('-active-like');
+        } else {
+          currentCount++;
+          likeButton.classList.add('-active-like');
+        }
+      counterEl.innerHTML = currentCount;
+      }
+    });
   </script>
 </html>
