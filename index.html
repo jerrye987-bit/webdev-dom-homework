@@ -62,13 +62,17 @@
             likes: 0,
             isLiked: false
           };
+          
+          if (name.value.trim() === "" || text.value.trim() === "") {
+            return alert("Пожалуйста, заполните все поля формы!")
+          } else {
+            comments.push(newComment);
 
-          comments.push(newComment);
+            renderComments();
 
-          renderComments();
-
-          name.value = "";
-          text.value = "";
+            name.value = "";
+            text.value = "";
+          }
         })
       }
 
