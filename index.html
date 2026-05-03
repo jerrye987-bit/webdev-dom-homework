@@ -35,15 +35,63 @@
     const comments =[
       {
         name: "Глеб Фокин",
-        date: new Date(),
-        text: "Это будет первый комментарий на этой странице"
+        date: new Date("2022-02-12 12:18"),
+        text: "Это будет первый комментарий на этой странице",
+        likes: 3,
+        isLiked: false
       },
       {
         name: "Варвара Н.",
-        date: new Date(),
-        text: "Мне нравится как оформлена эта страница! ❤"
+        date: new Date("2022-02-13 19:22"),
+        text: "Мне нравится как оформлена эта страница! ❤",
+        likes: 75,
+        isLiked: true
       }
     ]
+
+      const initNewComment = () => {
+        const addButton = document.querySelector(".add-form-button");
+        const name = document.getElementById("name-input");
+        const text = document.getElementById("text-input");
+
+        addButton.addEventListener('click', () => {
+          const newComment = {
+            name: name.value,
+            date: new Date(),
+            text: text.value,
+            likes: 0,
+            isLiked: false
+          };
+
+          comments.push(newComment);
+
+          renderComments();
+
+          name.value = "";
+          text.value = "";
+        })
+      }
+
+      const initLikes = () => {
+        const likeButtons = document.querySelectorAll(".like-button");
+
+        for(const likeButton of likeButtons) {
+          likeButton.addEventListener('click', () => {
+            const index = likeButton.dataset.index;
+            const comment = comments[index];
+
+            if (comment.isLiked) {
+              comment.likes -= 1;
+            } else {
+              comment.likes += 1;
+            }
+
+            comment.isLiked = !comment.isLiked;
+
+            renderComments();
+          })
+        }
+      }
 
     const renderComments = () => {
       const list = document.querySelector('.comments');
@@ -53,42 +101,27 @@
         <li class="comment" data-index="${index}">
           <div class="comment-header">
             <div>${comment.name}</div>
-            <div>${comment.date.toLocaleDateString()}</div>
+            <div>${comment.date.toLocaleString()}</div>
           </div>
           <div class="comment-body">
             <div class="comment-text">${comment.text}</div>
           </div>
           <div class="comment-footer">
             <div class="likes">
-              <span class="likes-counter">3</span>
-              <button class="like-button"></button>
+              <span class="likes-counter">${comment.likes}</span>
+              <button data-index="${index}" class="like-button ${comment.isLiked ? "-active-like" : ""}"></button>
             </div>
           </div>
         </li>
         `;
       }).join("");
+      
+      initLikes();
     }
 
     renderComments();
-
-    const addButton = document.querySelector(".add-form-button");
-    const name = document.getElementById("name-input");
-    const text = document.getElementById("text-input");
-
-    addButton.addEventListener('click', () => {
-      const newComment = {
-        name: name.value,
-        date: new Date(),
-        text: text.value
-      };
-
-      comments.push(newComment);
-
-      renderComments();
-
-      name.value = "";
-      text.value = "";
-    })
+    initNewComment();
+    
   
 
   </script>
