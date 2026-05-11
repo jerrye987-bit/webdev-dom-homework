@@ -32,6 +32,13 @@
 
   <script>
     "use strict";
+    const name = document.getElementById("name-input");
+    const text = document.getElementById("text-input");
+
+    const sanitizeHtml = (value) => {
+      return value.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+
     const comments =[
       {
         name: "Глеб Фокин",
@@ -49,53 +56,30 @@
       }
     ]
 
-      const initNewComment = () => {
-        const addButton = document.querySelector(".add-form-button");
-        const name = document.getElementById("name-input");
-        const text = document.getElementById("text-input");
-
-        addButton.addEventListener('click', () => {
-          const newComment = {
-            name: name.value,
-            date: new Date(),
-            text: text.value,
-            likes: 0,
-            isLiked: false
-          };
+    const initNewComment = () => {
+      const addButton = document.querySelector(".add-form-button");
+      
+      addButton.addEventListener('click', () => {
+        const newComment = {
+          name: sanitizeHtml(name.value),
+          date: new Date(),
+          text: sanitizeHtml(text.value),
+          likes: 0,
+          isLiked: false
+        };
           
-          if (name.value.trim() === "" || text.value.trim() === "") {
-            return alert("Пожалуйста, заполните все поля формы!")
-          } else {
-            comments.push(newComment);
+        if (name.value.trim() === "" || text.value.trim() === "") {
+          return alert("Пожалуйста, заполните все поля формы!")
+        } else {
+          comments.push(newComment);
 
-            renderComments();
+          renderComments();
 
-            name.value = "";
-            text.value = "";
-          }
-        })
-      }
-
-      const initLikes = () => {
-        const likeButtons = document.querySelectorAll(".like-button");
-
-        for(const likeButton of likeButtons) {
-          likeButton.addEventListener('click', () => {
-            const index = likeButton.dataset.index;
-            const comment = comments[index];
-
-            if (comment.isLiked) {
-              comment.likes -= 1;
-            } else {
-              comment.likes += 1;
-            }
-
-            comment.isLiked = !comment.isLiked;
-
-            renderComments();
-          })
+          name.value = "";
+          text.value = "";
         }
-      }
+      })
+    }
 
     const renderComments = () => {
       const list = document.querySelector('.comments');
@@ -120,7 +104,37 @@
         `;
       }).join("");
       
-      initLikes();
+      const likeButtons = document.querySelectorAll(".like-button");
+
+      for(const likeButton of likeButtons) {
+        likeButton.addEventListener('click', (event) => {
+          event.stopPropagation();
+
+          const index = likeButton.dataset.index;
+          const comment = comments[index];
+
+          if (comment.isLiked) {
+            comment.likes -= 1;
+          } else {
+            comment.likes += 1;
+          }
+
+          comment.isLiked = !comment.isLiked;
+
+          renderComments();
+        })
+      }
+
+      const commentsElements = document.querySelectorAll(".comment");
+
+      for (const commentElement of commentsElements) {
+        commentElement.addEventListener('click', () => {
+          const currentComment = comments[commentElement.dataset.index];
+
+          text.value = `> ${currentComment.text} >\n ${currentComment.name},`;
+          text.focus();
+        })
+      }
     }
 
     renderComments();
