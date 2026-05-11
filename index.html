@@ -121,7 +121,11 @@
 
           comment.isLiked = !comment.isLiked;
 
-          renderComments();
+          const likesContainer = likeButton.closest('.likes');
+          const counterElement = likesContainer.querySelector('.likes-counter');
+
+          counterElement.textContent = comment.likes;
+          likeButton.classList.toggle('-active-like', comment.isLiked);
         })
       }
 
