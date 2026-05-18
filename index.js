@@ -1,8 +1,7 @@
-"use strict";
-    
+'use strict'
 
-    import { renderComments } from "./modules/renderComments.js";
-    import { initNewComment } from "./modules/initNewComment.js";
+import { renderComments } from './modules/renderComments.js'
+import { initNewComment } from './modules/initNewComment.js'
 
-    renderComments();
-    initNewComment();
+renderComments()
+initNewComment()
