@@ -1,6 +1,6 @@
 import { comments } from './commentsArr.js'
 
-// export const name = document.getElementById('name-input')
+export const name = document.getElementById('name-input')
 export const text = document.getElementById('text-input')
 
 export const renderComments = () => {
