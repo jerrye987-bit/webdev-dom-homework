@@ -1,4 +1,5 @@
 import { comments } from './commentsArr.js'
+import { delay } from './delay.js'
 
 export const name = document.getElementById('name-input')
 export const text = document.getElementById('text-input')
@@ -31,11 +32,19 @@ export const renderComments = () => {
     const likeButtons = document.querySelectorAll('.like-button')
 
     for (const likeButton of likeButtons) {
-        likeButton.addEventListener('click', (event) => {
+        likeButton.addEventListener('click', async (event) => {
             event.stopPropagation()
+
+            if (likeButton.classList.contains('-loading-like')) return
 
             const index = likeButton.dataset.index
             const comment = comments[index]
+
+            likeButton.classList.add('-loading-like')
+
+            await delay()
+
+            likeButton.classList.remove('-loading-like')
 
             if (comment.isLiked) {
                 comment.likes -= 1

@@ -1,5 +1,4 @@
 import { sanitizeHtml } from './sanitizeHtml.js'
-// import { comments } from './commentsArr.js'
 import { renderComments } from './renderComments.js'
 import { text } from './renderComments.js'
 import { name } from './renderComments.js'
