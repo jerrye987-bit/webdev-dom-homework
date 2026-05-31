@@ -13,6 +13,8 @@ export const initNewComment = () => {
         if (name.value.trim() === '' || text.value.trim() === '') {
             return alert('Пожалуйста, заполните все поля формы!')
         } else {
+            document.querySelector('.form-loading')
+
             postComment(
                 sanitizeHtml(text.value),
                 sanitizeHtml(name.value),
