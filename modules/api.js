@@ -27,7 +27,5 @@ export const postComment = (text, name) => {
             text: text,
             name: name,
         }),
-    }).then(() => {
-        return fetchComments()
     })
 }
