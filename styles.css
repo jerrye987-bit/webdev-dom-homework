@@ -106,7 +106,7 @@ body {
 }
 
 .-loading-like {
-  animation: rotating 2s linear infinite;
+  animation: rotating 0.5s linear infinite;
 }
 
 .-active-like {
@@ -126,6 +126,7 @@ body {
   font-family: Helvetica;
   border-radius: 8px;
   border: none;
+  transition: background-color 0.25s ease;
 }
 
 .add-form-name {
@@ -159,5 +160,5 @@ body {
 }
 
 .-error {
-  border: 1px solid red;
+  background-color: rgb(224, 152, 152) !important;
 }
