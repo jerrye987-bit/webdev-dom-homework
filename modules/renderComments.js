@@ -1,13 +1,12 @@
 import { comments } from './commentsArr.js'
 import { delay } from './delay.js'
-
-export const name = document.getElementById('name-input')
-export const text = document.getElementById('text-input')
+import { initNewComment } from './initNewComment.js'
+import { getUserName } from './api.js';
 
 export const renderComments = () => {
-    const list = document.querySelector('.comments')
+    const app = document.getElementById('app')
 
-    list.innerHTML = comments
+    const commentsHtml = comments
         .map((comment, index) => {
             return `
         <li class="comment" data-index="${index}">
@@ -28,6 +27,37 @@ export const renderComments = () => {
         `
         })
         .join('')
+
+    app.innerHTML = `
+        <div class="container">
+            <h1>Список комментариев</h1>
+            <ul class="comments" id="list">${commentsHtml}</ul>
+
+            <div class="form-loading" style="display: none; margin-top: 48px; font-size: 20px; font-weight: bold; color: #bcec30;">
+                Комментарий добавляется...
+            </div>
+            
+            <div class="add-form">
+                <h3>Добавить комментарий</h3>
+                <input 
+                    type="text" 
+                    id="name-input" 
+                    class="add-form-name" 
+                    value="${getUserName()}" 
+                    placeholder="Введите ваше имя" 
+                    ${getUserName() ? 'disabled style="background-color: #353535; color: #a0a0a0;"' : ''} 
+                />
+                <textarea id="text-input" class="add-form-text" placeholder="Введите ваш комментарий" rows="4"></textarea>
+                <div class="add-form-row">
+                    <button id="add-comment-button" class="add-form-button">Отправить</button>
+                </div>
+            </div>
+            
+            <div id="error-block" style="color: #ff5e5e; margin-top: 20px; font-weight: bold; text-align: center; font-size: 18px;"></div>
+        </div>
+    `
+
+    const textInput = document.getElementById('text-input')
 
     const likeButtons = document.querySelectorAll('.like-button')
 
@@ -69,8 +99,12 @@ export const renderComments = () => {
         commentElement.addEventListener('click', () => {
             const currentComment = comments[commentElement.dataset.index]
 
-            text.value = `> ${currentComment.text} >\n ${currentComment.name},`
-            text.focus()
+            if (textInput) {
+                textInput.value = `> ${currentComment.text} >\n ${currentComment.name}, `
+                textInput.focus()
+            }
         })
     }
+
+    initNewComment()
 }
