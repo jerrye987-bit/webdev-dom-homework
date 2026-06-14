@@ -26,6 +26,7 @@ export const postComment = (text, name) => {
         body: JSON.stringify({
             text: text,
             name: name,
+            forceError: true, // Для проверки ошибки 500
         }),
     })
 }

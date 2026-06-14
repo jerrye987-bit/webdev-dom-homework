@@ -1,4 +1,4 @@
-export function delay(interval = 2000) {
+export function delay(interval = 500) {
     return new Promise((resolve) => {
         setTimeout(() => {
             resolve()
