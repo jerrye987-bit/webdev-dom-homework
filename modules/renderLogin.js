@@ -1,11 +1,11 @@
-import { login, setToken } from "./api.js";
-import { fetchComments } from "./api.js";
-import { updateComments } from "./commentsArr.js";
-import { renderComments } from "./renderComments.js";
-import { renderRegistration } from "./renderRegistration.js";
+import { login, setToken } from './api.js'
+import { fetchComments } from './api.js'
+import { updateComments } from './commentsArr.js'
+import { renderComments } from './renderComments.js'
+import { renderRegistration } from './renderRegistration.js'
 
 export const renderLogin = () => {
-    const container = document.querySelector('.container');
+    const container = document.querySelector('.container')
     const loginHtml = `
         <section class="add-form">
             <h2>Форма входа</h2>
@@ -24,7 +24,7 @@ export const renderLogin = () => {
                 required
             >
             <div class="add-form-row">
-                <button class="add-form-button" id="login-button" type="submit">Войти</button>
+                <button class="add-form-button" id="login-button" type="button">Войти</button>
                 <button class="add-form-button" id="to-reg-button" type="button" style="background-color: #7334ea; color: white;">Зарегистрироваться</button>
             </div>
         </section>
@@ -34,48 +34,75 @@ export const renderLogin = () => {
 
     container.innerHTML = loginHtml
 
-    const button = document.getElementById('login-button');
-    const buttonToReg = document.getElementById('to-reg-button');
-    const loginElement = document.getElementById('login');
-    const passwordElement = document.getElementById('password');
-    const errorBlock = document.getElementById('login-error');
+    const button = document.getElementById('login-button')
+    const buttonToReg = document.getElementById('to-reg-button')
+    const loginElement = document.getElementById('login')
+    const passwordElement = document.getElementById('password')
+    const errorBlock = document.getElementById('login-error')
 
-    if (!button || !buttonToReg) return;
+    if (!button || !buttonToReg) return
 
     button.addEventListener('click', () => {
-        if (errorBlock) errorBlock.textContent = '';
+        if (errorBlock) errorBlock.textContent = ''
 
-        if (loginElement.value.trim() === '' || passwordElement.value.trim() === '') {
-            alert('Пожалуйста, заполните все поля формы входа!');
-            return;
+        loginElement.classList.remove('-error')
+        passwordElement.classList.remove('-error')
+
+        if (
+            loginElement.value.trim() === '' ||
+            passwordElement.value.trim() === ''
+        ) {
+            if (loginElement.value.trim() === '') {
+                loginElement.classList.add('-error')
+            }
+
+            if (passwordElement.value.trim() === '') {
+                passwordElement.classList.add('-error')
+            }
+
+            alert('Пожалуйста, заполните все поля формы входа!')
+            return
         }
 
-        button.disabled = true;
-        button.textContent = 'Вход...';
+        button.disabled = true
+        button.textContent = 'Вход...'
 
         login({
             login: loginElement.value,
             password: passwordElement.value,
         })
-        .then((responseData) => {
-            setToken(responseData.user);
-            
-            return fetchComments();
-        })
-        .then((data) => {
-            updateComments(data);
-            renderComments();
-        })
-        .catch((error) => {
-            if (errorBlock) {
-                errorBlock.textContent = error.message || 'Не удалось войти. Проверьте логин и пароль.';
-            }
-            button.disabled = false;
-            button.textContent = 'Войти';
-        });
-    });
+            .then((responseData) => {
+                setToken(responseData.user)
+
+                return fetchComments()
+            })
+            .then((data) => {
+                updateComments(data)
+                renderComments()
+            })
+            .catch((error) => {
+                if (errorBlock) {
+                    errorBlock.textContent =
+                        error.message ||
+                        'Не удалось войти. Проверьте логин и пароль.'
+                }
+
+                loginElement.classList.add('-error');
+                passwordElement.classList.add('-error');
+                button.disabled = false
+                button.textContent = 'Войти'
+            })
+    })
 
     buttonToReg.addEventListener('click', () => {
-        renderRegistration();
-    });
-};
+        renderRegistration()
+    })
+
+    loginElement.addEventListener('input', () => {
+        loginElement.classList.remove('-error')
+    })
+
+    passwordElement.addEventListener('input', () => {
+        passwordElement.classList.remove('-error')
+    })
+}

@@ -1,4 +1,6 @@
 import { delay } from './delay.js'
+import { token } from './api.js'
+import { renderLogin } from './renderLogin.js'
 
 export const initLikeListeners = (comments) => {
     const likeButtons = document.querySelectorAll('.like-button')
@@ -6,6 +8,12 @@ export const initLikeListeners = (comments) => {
     for (const likeButton of likeButtons) {
         likeButton.addEventListener('click', async (event) => {
             event.stopPropagation()
+
+            if (!token) {
+                alert('Чтобы ставить лайки, пожалуйста, авторизуйтесь!')
+                renderLogin()
+                return
+            }
 
             if (likeButton.classList.contains('-loading-like')) return
 

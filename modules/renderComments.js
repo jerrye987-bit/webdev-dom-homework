@@ -76,8 +76,9 @@ export const renderComments = () => {
 
     container.innerHTML = baseHtml
 
+    initLikeListeners(comments)
+
     if (token) {
-        initLikeListeners(comments)
         initReplyListeners(comments)
         initNewComment(renderComments)
     } else {
