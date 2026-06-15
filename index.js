@@ -22,8 +22,8 @@ fetchComments()
     })
     .catch((error) => {
         if (error.message === 'Нет авторизации') {
-        updateToken(null); 
-        renderLogin(); 
+            setToken(null); 
+            renderLogin(); 
         } else {
             if (appElement) {
                 appElement.innerHTML = `

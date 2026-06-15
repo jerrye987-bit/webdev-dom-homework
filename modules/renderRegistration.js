@@ -1,4 +1,4 @@
-import { registration, updateToken, fetchComments } from "./api.js";
+import { registration, setToken, fetchComments } from "./api.js";
 import { updateComments } from "./commentsArr.js";
 import { renderComments } from "./renderComments.js";
 import { renderLogin } from "./renderLogin.js";
@@ -55,7 +55,7 @@ export const renderRegistration = () => {
         .then((responseData) => {
             const userObject = responseData.user ? responseData.user : responseData;
             
-            updateToken(userObject);
+            setToken(userObject);
             
             return fetchComments();
         })

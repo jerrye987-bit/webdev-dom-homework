@@ -1,11 +1,27 @@
+import { login, setToken, getUserName, token } from './api.js'
 import { comments } from './commentsArr.js'
 import { delay } from './delay.js'
+import { initLikeListeners } from './initLikeListeners.js'
+import { initReplyListeners } from './initReplyListeners.js'
+import { renderLogin } from './renderLogin.js'
 import { initNewComment } from './initNewComment.js'
-import { getUserName } from './api.js';
+
+export const name = document.getElementById('name-input')
+export const text = document.getElementById('text-input')
 
 export const renderComments = () => {
-    const app = document.getElementById('app')
+    const container = document.querySelector('.container')
+    let userPanelHtml = ''
 
+    if (token) {
+        userPanelHtml = `
+        <div class="user-panel" style="text-align: right; margin-bottom: 20px;">
+            <span>Привет, <b>${getUserName()}</b>!</span>
+            <button id="logout-button" type="button" class="logout-button">Выйти</button>
+        </div>
+        `
+    }
+    
     const commentsHtml = comments
         .map((comment, index) => {
             return `
@@ -28,83 +44,54 @@ export const renderComments = () => {
         })
         .join('')
 
-    app.innerHTML = `
-        <div class="container">
-            <h1>Список комментариев</h1>
-            <ul class="comments" id="list">${commentsHtml}</ul>
-
-            <div class="form-loading" style="display: none; margin-top: 48px; font-size: 20px; font-weight: bold; color: #bcec30;">
-                Комментарий добавляется...
+    const addCommentsHtml = `
+        <div class="add-form">
+            <input
+                type="text"
+                class="add-form-name"
+                id="name-input"
+                value="${getUserName()}"
+                disabled
+            />
+            <textarea
+                type="textarea"
+                class="add-form-text"
+                placeholder="Введите ваш коментарий"
+                rows="4"
+                id="text-input"
+            ></textarea>
+            <div class="add-form-row">
+                <button class="add-form-button">Написать</button>
             </div>
-            
-            <div class="add-form">
-                <h3>Добавить комментарий</h3>
-                <input 
-                    type="text" 
-                    id="name-input" 
-                    class="add-form-name" 
-                    value="${getUserName()}" 
-                    placeholder="Введите ваше имя" 
-                    ${getUserName() ? 'disabled style="background-color: #353535; color: #a0a0a0;"' : ''} 
-                />
-                <textarea id="text-input" class="add-form-text" placeholder="Введите ваш комментарий" rows="4"></textarea>
-                <div class="add-form-row">
-                    <button id="add-comment-button" class="add-form-button">Отправить</button>
-                </div>
-            </div>
-            
-            <div id="error-block" style="color: #ff5e5e; margin-top: 20px; font-weight: bold; text-align: center; font-size: 18px;"></div>
         </div>
-    `
+        <div class="form-loading" style="display: none; margin-top: 20px;">
+            Комментарий добавляется...
+        </div>`
 
-    const textInput = document.getElementById('text-input')
+    const linkToLoginText = `<p>Чтобы отправить комментарий, <span class="link-login">войдите</span></p>`
 
-    const likeButtons = document.querySelectorAll('.like-button')
+    const baseHtml = `${userPanelHtml}
+        <ul class="comments">${commentsHtml}</ul>
+        ${token ? addCommentsHtml : linkToLoginText}`
 
-    for (const likeButton of likeButtons) {
-        likeButton.addEventListener('click', async (event) => {
-            event.stopPropagation()
+    container.innerHTML = baseHtml
 
-            if (likeButton.classList.contains('-loading-like')) return
-
-            const index = likeButton.dataset.index
-            const comment = comments[index]
-
-            likeButton.classList.add('-loading-like')
-
-            await delay()
-
-            likeButton.classList.remove('-loading-like')
-
-            if (comment.isLiked) {
-                comment.likes -= 1
-            } else {
-                comment.likes += 1
-            }
-
-            comment.isLiked = !comment.isLiked
-
-            const likesContainer = likeButton.closest('.likes')
-            const counterElement =
-                likesContainer.querySelector('.likes-counter')
-
-            counterElement.textContent = comment.likes
-            likeButton.classList.toggle('-active-like', comment.isLiked)
+    if (token) {
+        initLikeListeners(comments)
+        initReplyListeners(comments)
+        initNewComment(renderComments)
+    } else {
+        document.querySelector('.link-login').addEventListener('click', () => {
+            renderLogin()
         })
     }
 
-    const commentsElements = document.querySelectorAll('.comment')
+    const logoutButton = document.getElementById('logout-button')
 
-    for (const commentElement of commentsElements) {
-        commentElement.addEventListener('click', () => {
-            const currentComment = comments[commentElement.dataset.index]
-
-            if (textInput) {
-                textInput.value = `> ${currentComment.text} >\n ${currentComment.name}, `
-                textInput.focus()
-            }
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            setToken(null)
+            renderLogin()
         })
     }
-
-    initNewComment()
 }

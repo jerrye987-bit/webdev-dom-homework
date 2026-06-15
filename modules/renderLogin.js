@@ -1,36 +1,43 @@
-import { login, updateToken } from "./api.js";
+import { login, setToken } from "./api.js";
 import { fetchComments } from "./api.js";
 import { updateComments } from "./commentsArr.js";
 import { renderComments } from "./renderComments.js";
 import { renderRegistration } from "./renderRegistration.js";
 
 export const renderLogin = () => {
-    const app = document.getElementById('app');
-
-    if (!app) return;
-
-    app.innerHTML = `
-    <div class="container">
-        <h1>Страница входа</h1>
-
-        <form class="add-form" style="gap: 12px;">
-            <h3>Форма входа</h3>
-            <input type="text" id="login-input" class="add-form-name" autocomplete="username" placeholder="Введите логин" style="width: 100%; box-sizing: border-box;">
-            <input type="password" id="password-input" class="add-form-name" autocomplete="current-password" placeholder="Введите пароль" style="width: 100%; box-sizing: border-box;">
+    const container = document.querySelector('.container');
+    const loginHtml = `
+        <section class="add-form">
+            <h2>Форма входа</h2>
+            <input
+                type="text"
+                id="login"
+                class="add-form-name"
+                placeholder="Введите логин"
+                required
+            >
+            <input
+                type="text"
+                id="password"
+                class="add-form-name"
+                placeholder="Введите пароль"
+                required
+            >
             <div class="add-form-row">
                 <button class="add-form-button" id="login-button" type="submit">Войти</button>
                 <button class="add-form-button" id="to-reg-button" type="button" style="background-color: #7334ea; color: white;">Зарегистрироваться</button>
             </div>
-        </form>
+        </section>
 
         <div id="login-error" style="color: #ff5e5e; margin-top: 20px; font-weight: bold; text-align: center;"></div>
-    </div>
-    `;
+    `
+
+    container.innerHTML = loginHtml
 
     const button = document.getElementById('login-button');
     const buttonToReg = document.getElementById('to-reg-button');
-    const loginElement = document.getElementById('login-input');
-    const passwordElement = document.getElementById('password-input');
+    const loginElement = document.getElementById('login');
+    const passwordElement = document.getElementById('password');
     const errorBlock = document.getElementById('login-error');
 
     if (!button || !buttonToReg) return;
@@ -51,7 +58,7 @@ export const renderLogin = () => {
             password: passwordElement.value,
         })
         .then((responseData) => {
-            updateToken(responseData.user);
+            setToken(responseData.user);
             
             return fetchComments();
         })
