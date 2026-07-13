@@ -1,13 +1,28 @@
+import { login, setToken, getUserName, token } from './api.js'
 import { comments } from './commentsArr.js'
 import { delay } from './delay.js'
+import { initLikeListeners } from './initLikeListeners.js'
+import { initReplyListeners } from './initReplyListeners.js'
+import { renderLogin } from './renderLogin.js'
+import { initNewComment } from './initNewComment.js'
 
 export const name = document.getElementById('name-input')
 export const text = document.getElementById('text-input')
 
 export const renderComments = () => {
-    const list = document.querySelector('.comments')
+    const container = document.querySelector('.container')
+    let userPanelHtml = ''
 
-    list.innerHTML = comments
+    if (token) {
+        userPanelHtml = `
+        <div class="user-panel" style="text-align: right; margin-bottom: 20px;">
+            <span>Привет, <b>${getUserName()}</b>!</span>
+            <button id="logout-button" type="button" class="logout-button">Выйти</button>
+        </div>
+        `
+    }
+    
+    const commentsHtml = comments
         .map((comment, index) => {
             return `
         <li class="comment" data-index="${index}">
@@ -29,48 +44,55 @@ export const renderComments = () => {
         })
         .join('')
 
-    const likeButtons = document.querySelectorAll('.like-button')
+    const addCommentsHtml = `
+        <div class="add-form">
+            <input
+                type="text"
+                class="add-form-name"
+                id="name-input"
+                value="${getUserName()}"
+                disabled
+            />
+            <textarea
+                type="textarea"
+                class="add-form-text"
+                placeholder="Введите ваш коментарий"
+                rows="4"
+                id="text-input"
+            ></textarea>
+            <div class="add-form-row">
+                <button class="add-form-button">Написать</button>
+            </div>
+        </div>
+        <div class="form-loading" style="display: none; margin-top: 20px;">
+            Комментарий добавляется...
+        </div>`
 
-    for (const likeButton of likeButtons) {
-        likeButton.addEventListener('click', async (event) => {
-            event.stopPropagation()
+    const linkToLoginText = `<p>Чтобы отправить комментарий, <span class="link-login">войдите</span></p>`
 
-            if (likeButton.classList.contains('-loading-like')) return
+    const baseHtml = `${userPanelHtml}
+        <ul class="comments">${commentsHtml}</ul>
+        ${token ? addCommentsHtml : linkToLoginText}`
 
-            const index = likeButton.dataset.index
-            const comment = comments[index]
+    container.innerHTML = baseHtml
 
-            likeButton.classList.add('-loading-like')
+    initLikeListeners(comments)
 
-            await delay()
-
-            likeButton.classList.remove('-loading-like')
-
-            if (comment.isLiked) {
-                comment.likes -= 1
-            } else {
-                comment.likes += 1
-            }
-
-            comment.isLiked = !comment.isLiked
-
-            const likesContainer = likeButton.closest('.likes')
-            const counterElement =
-                likesContainer.querySelector('.likes-counter')
-
-            counterElement.textContent = comment.likes
-            likeButton.classList.toggle('-active-like', comment.isLiked)
+    if (token) {
+        initReplyListeners(comments)
+        initNewComment(renderComments)
+    } else {
+        document.querySelector('.link-login').addEventListener('click', () => {
+            renderLogin()
         })
     }
 
-    const commentsElements = document.querySelectorAll('.comment')
+    const logoutButton = document.getElementById('logout-button')
 
-    for (const commentElement of commentsElements) {
-        commentElement.addEventListener('click', () => {
-            const currentComment = comments[commentElement.dataset.index]
-
-            text.value = `> ${currentComment.text} >\n ${currentComment.name},`
-            text.focus()
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            setToken(null)
+            renderLogin()
         })
     }
 }
